@@ -22,7 +22,7 @@ def _extends(scanner, token):
 
 
 def _selector_list(scanner, token):
-    return [t.strip(' \t\n') for t in token.split(',')]
+    return token
 
 
 class _Selector(object):
@@ -36,8 +36,9 @@ class _Selector(object):
         props = {}
         if self.extended_properties:
             props = self.extended_properties
-        for key, val in self.new_properties:
-            props[key] = val
+        if self.new_properties:
+            for key, val in self.new_properties:
+                props[key] = val
         return props
 
     def _set_properties(self, val):
@@ -52,11 +53,10 @@ class _Selector(object):
 
 
 def parse(pcss):
-    SELECTOR = '(\.?[a-z0-9]+)'
+    SELECTOR = '([a-z0-9#\.\-_]+)'
 
     K_ABSTRACT = 'KEYWORD_ABSTRACT'
     T_SELECTOR = 'SELECTOR'
-    T_SELECTOR_LIST = 'SELECTOR_LIST'
     T_PROPERTY_LIST = 'PROPERTY_LIST'
     T_EXTENDS = 'EXTENDS'
 
@@ -64,9 +64,7 @@ def parse(pcss):
         (K_ABSTRACT,
             r'abstract'),
         (T_SELECTOR,
-            SELECTOR),
-        (T_SELECTOR_LIST, (
-            T_SELECTOR + '(, ?' + SELECTOR + ')+', _selector_list)),
+            (SELECTOR + '(, ' + SELECTOR + ')*', _selector_list)),
         (T_PROPERTY_LIST,
             (r'\{([^\}]*)\}', _property_list)),
         (T_EXTENDS,
@@ -79,7 +77,7 @@ def parse(pcss):
     previous_selector = None
     selectors = SortedDict()
 
-    for token, value in lex.scan(pcss):
+    for token, value in lex.scan(_strip_whitespace(pcss)):
         if token == K_ABSTRACT:
             next_is_abstract = True
         if token == T_SELECTOR:

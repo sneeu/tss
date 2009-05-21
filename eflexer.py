@@ -66,7 +66,6 @@ class _InputScanner(object):
         match = self.lexer.regexc.match(self.input, self._position)
         if match is None:
             lineno = self.input[:self._position].count("\n") + 1
-            print len(self.input), self._position
             raise UnknownTokenError(self.input[self._position], lineno)
         self._position = match.end()
         value = match.group(match.lastgroup)

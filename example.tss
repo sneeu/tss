@@ -7,7 +7,11 @@ abstract .box {
 	width: 100%;
 }
 
-.error (.message){
+li.error, li.warning (.message){
 	background: #fcc;
 	color: #c00;
+}
+
+div#header_branding {
+	font-size: 2em
 }
