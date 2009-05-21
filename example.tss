@@ -1,0 +1,13 @@
+abstract .box {
+	border: 1px solid;
+	color: #222
+}
+
+.message (.box){
+	width: 100%;
+}
+
+.error (.message){
+	background: #fcc;
+	color: #c00;
+}
