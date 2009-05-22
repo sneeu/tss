@@ -18,11 +18,11 @@ def _property_list(scanner, token):
 
 
 def _extends(scanner, token):
-    return token.strip('()')
+    return [_strip_whitespace(t) for t in token.strip('()').split(',')]
 
 
 def _selector_list(scanner, token):
-    return token
+    return _strip_whitespace(token)
 
 
 class _Selector(object):
@@ -53,7 +53,8 @@ class _Selector(object):
 
 
 def parse(pcss):
-    SELECTOR = '([a-z0-9#\.\-_]+)'
+    SELECTOR = '([a-z0-9#\.\-_ \t\n]+)'
+    SELECTOR_LIST = SELECTOR + '(, ' + SELECTOR + ')*'
 
     K_ABSTRACT = 'KEYWORD_ABSTRACT'
     T_SELECTOR = 'SELECTOR'
@@ -64,11 +65,11 @@ def parse(pcss):
         (K_ABSTRACT,
             r'abstract'),
         (T_SELECTOR,
-            (SELECTOR + '(, ' + SELECTOR + ')*', _selector_list)),
+            (SELECTOR_LIST, _selector_list)),
         (T_PROPERTY_LIST,
             (r'\{([^\}]*)\}', _property_list)),
         (T_EXTENDS,
-            (r'\(%s\)' % SELECTOR, _extends))
+            (r'\(%s\)' % SELECTOR_LIST, _extends))
     )
 
     lex = Lexer(rules, case_sensitive=False)
@@ -87,7 +88,11 @@ def parse(pcss):
         if token == T_PROPERTY_LIST:
             selectors[previous_selector].properties = value
         if token == T_EXTENDS:
-            selectors[previous_selector].extended_properties = selectors[value].properties
+            props = {}
+            for selector in value:
+                for prop, val in selectors[selector].properties.items():
+                    props[prop] = val
+            selectors[previous_selector].extended_properties = props
 
     for __, selector in selectors.items():
         if not selector.abstract:

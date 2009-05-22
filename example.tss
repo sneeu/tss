@@ -1,17 +1,46 @@
+body {
+	background: #fff;
+	color: #444;
+}
+
+a {
+	border-bottom: 1px solid;
+	color: #33c;
+	padding-bottom: 1px;
+}
+
 abstract .box {
+	background: #ddd;
 	border: 1px solid;
 	color: #222
 }
 
 .message (.box){
-	width: 100%;
+	color: #393;
 }
 
-li.error, li.warning (.message){
-	background: #fcc;
+.error (.message){
 	color: #c00;
 }
 
-div#header_branding {
-	font-size: 2em
+.info (.message){
+	color: #33c;
+}
+
+abstract .head {
+	color: #000;
+}
+
+h1 (.head){
+	font-size: 2em;
+	line-height: 1.5em;
+}
+h2 (.head){
+	font-size: 1.25em;
+	line-height: 1.2em;
+}
+
+#branding a (a){
+	border-bottom: 0;
+	padding-bottom: 0;
 }
